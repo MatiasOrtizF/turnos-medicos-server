@@ -3,6 +3,7 @@ package com.turnosmedicos.turnosmedicos.models;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -23,7 +24,7 @@ public class User {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @NotBlank(message = "dni is mandatory")
+    @NotNull(message = "dni is mandatory")
     @Column(name = "dni", nullable = false)
     private Integer dni;
 
