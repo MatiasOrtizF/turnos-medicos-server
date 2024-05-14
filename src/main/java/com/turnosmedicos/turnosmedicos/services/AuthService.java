@@ -26,12 +26,12 @@ public class AuthService {
         return (userId != null);
     }
 
-    public User validationEmail(String email) {
-        return userRepository.findByEmail(email);
+    public User validationDni(Integer dni) {
+        return userRepository.findByDni(dni);
     }
 
     public LoginResponse validationCredentials(User user) {
-        User userLogged = validationEmail(user.getEmail());
+        User userLogged = validationDni(user.getDni());
         if (userLogged != null) {
             String passwordHashed = userLogged.getPassword();
 
@@ -46,7 +46,7 @@ public class AuthService {
                 return response;
             }
         }
-        throw new RuntimeException("Email or password is incorrect");
+        throw new RuntimeException("Dni or password is incorrect");
     }
 
     public Long getUserId(String token) {
