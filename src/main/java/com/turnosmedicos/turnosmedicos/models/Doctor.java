@@ -3,6 +3,7 @@ package com.turnosmedicos.turnosmedicos.models;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -23,7 +24,7 @@ public class Doctor {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @NotBlank(message = "dni is mandatory")
+    @NotNull(message = "dni is mandatory")
     @Column(name = "dni", nullable = false)
     private Integer dni;
 
@@ -36,7 +37,7 @@ public class Doctor {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    @NotBlank(message = "specialist is mandatory")
-    @Column(name = "specialist", nullable = false)
-    private String specialist;
+    @NotBlank(message = "speciality is mandatory")
+    @Column(name = "speciality", nullable = false)
+    private String speciality;
 }
