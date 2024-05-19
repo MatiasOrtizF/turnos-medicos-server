@@ -3,11 +3,11 @@ package com.turnosmedicos.turnosmedicos.services;
 import com.turnosmedicos.turnosmedicos.exceptions.ResourceNotFoundException;
 import com.turnosmedicos.turnosmedicos.exceptions.UnauthorizedException;
 import com.turnosmedicos.turnosmedicos.exceptions.UserMismatchException;
+import com.turnosmedicos.turnosmedicos.models.Appointment;
 import com.turnosmedicos.turnosmedicos.models.Doctor;
-import com.turnosmedicos.turnosmedicos.models.Shift;
 import com.turnosmedicos.turnosmedicos.models.User;
+import com.turnosmedicos.turnosmedicos.repositories.AppointmentRepository;
 import com.turnosmedicos.turnosmedicos.repositories.DoctorRepository;
-import com.turnosmedicos.turnosmedicos.repositories.ShiftRepository;
 import com.turnosmedicos.turnosmedicos.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,49 +17,49 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
-public class ShiftService {
+public class AppointmentService {
     private final AuthService authService;
-    private final ShiftRepository shiftRepository;
+    private final AppointmentRepository appointmentRepository;
     private final UserRepository userRepository;
     private final DoctorRepository doctorRepository;
 
     @Autowired
-    public ShiftService(AuthService authService, ShiftRepository shiftRepository, UserRepository userRepository, DoctorRepository doctorRepository) {
+    public AppointmentService(AuthService authService, AppointmentRepository appointmentRepository, UserRepository userRepository, DoctorRepository doctorRepository) {
         this.authService = authService;
-        this.shiftRepository = shiftRepository;
+        this.appointmentRepository = appointmentRepository;
         this.userRepository = userRepository;
         this.doctorRepository = doctorRepository;
     }
 
-    public List<Shift> getAllShift(String token) {
+    public List<Appointment> getAllAppointment(String token) {
         if(authService.validationToken(token)) {
             Long userId = authService.getUserId(token);
-            return shiftRepository.findByUserId(userId);
+            return appointmentRepository.findByUserId(userId);
         } throw new UnauthorizedException("Unauthorized: Invalid token");
     }
 
-    public Shift addShift(Date date, Long doctorId, String token) {
+    public Appointment addAppointment(Date date, Long doctorId, String token) {
         if(authService.validationToken(token)) {
             Long userId = authService.getUserId(token);
             User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("The user is not found"));
             Doctor doctor = doctorRepository.findById(doctorId).orElseThrow(() -> new ResourceNotFoundException("The doctor is not found"));
 
-            Shift newShift = new Shift();
-            newShift.setUser(user);
-            newShift.setDoctor(doctor);
-            newShift.setDate(date);
+            Appointment newAppointment = new Appointment();
+            newAppointment.setUser(user);
+            newAppointment.setDoctor(doctor);
+            newAppointment.setDate(date);
 
-            return shiftRepository.save(newShift);
+            return appointmentRepository.save(newAppointment);
         } throw new UnauthorizedException("Unauthorized: invalid token");
     }
 
-    public Boolean cancelShift(Long id, String token) {
+    public Boolean cancelAppointment(Long id, String token) {
         if(authService.validationToken(token)) {
             Long userId = authService.getUserId(token);
             User user = userRepository.findById(userId).orElseThrow(()-> new ResourceNotFoundException("The user with this id:" + id + "is not found"));
-            Shift shift = shiftRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("The shift with this id: " + id + "is not found"));;
-            if(Objects.equals(user.getId(), shift.getUser().getId())) {
-                shiftRepository.delete(shift);
+            Appointment appointment = appointmentRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("The shift with this id: " + id + "is not found"));;
+            if(Objects.equals(user.getId(), appointment.getUser().getId())) {
+                appointmentRepository.delete(appointment);
                 return true;
             } throw new UserMismatchException("User mismatch");
         } throw new UnauthorizedException("Unauthorized: invalid token");

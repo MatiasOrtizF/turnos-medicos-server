@@ -1,7 +1,7 @@
 package com.turnosmedicos.turnosmedicos.controllers;
 
 import com.turnosmedicos.turnosmedicos.exceptions.UnauthorizedException;
-import com.turnosmedicos.turnosmedicos.services.ShiftService;
+import com.turnosmedicos.turnosmedicos.services.AppointmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,19 +12,19 @@ import java.util.Date;
 @CrossOrigin(origins = {"http://localhost:19006/", "192.168.0.9:8081"})
 @RequestMapping("/api/shift")
 @RestController
-public class ShiftController {
+public class AppointmentController {
 
-    private final ShiftService shiftService;
+    private final AppointmentService appointmentService;
 
     @Autowired
-    public ShiftController(ShiftService shiftService) {
-        this.shiftService = shiftService;
+    public AppointmentController(AppointmentService appointmentService) {
+        this.appointmentService = appointmentService;
     }
 
     @GetMapping
     public ResponseEntity<?> getAllShift(@RequestHeader(value = "Authorization")String token) {
         try {
-            return ResponseEntity.ok(shiftService.getAllShift(token));
+            return ResponseEntity.ok(appointmentService.getAllAppointment(token));
         } catch (UnauthorizedException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: invalid token");
         }
@@ -33,7 +33,7 @@ public class ShiftController {
     @PostMapping
     public ResponseEntity<?> addShift(@RequestHeader(value = "Authorization")String token, @RequestParam Date date, @RequestParam Long doctorId) {
         try {
-            return ResponseEntity.ok(shiftService.addShift(date, doctorId, token));
+            return ResponseEntity.ok(appointmentService.addAppointment(date, doctorId, token));
         } catch (UnauthorizedException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: invalid token");
         }
@@ -42,7 +42,7 @@ public class ShiftController {
     @DeleteMapping("{id}")
     public ResponseEntity<?> cancelShift(@PathVariable Long id, @RequestHeader(value = "Authorization")String token) {
         try {
-            return ResponseEntity.ok(shiftService.cancelShift(id, token));
+            return ResponseEntity.ok(appointmentService.cancelAppointment(id, token));
         } catch (UnauthorizedException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: invalid token");
         }
