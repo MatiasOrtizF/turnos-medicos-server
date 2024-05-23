@@ -22,7 +22,7 @@ public class DoctorController {
 
     @PostMapping
     public Doctor addDoctor(@RequestBody Doctor doctor) {
-        return doctorService.addUser(doctor);
+        return doctorService.addDoctor(doctor);
     }
 
     @GetMapping
@@ -31,6 +31,15 @@ public class DoctorController {
             return ResponseEntity.ok(doctorService.getDoctorInfo(token));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User does not exist");
+        } catch (UnauthorizedException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("invalid token");
+        }
+    }
+
+    @GetMapping("{speciality}")
+    public ResponseEntity<?> getDoctorBySpeciality(@RequestHeader(value = "Authorization")String token, @PathVariable String speciality) {
+        try {
+            return ResponseEntity.ok(doctorService.getDoctorBySpeciality(token, speciality));
         } catch (UnauthorizedException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("invalid token");
         }
