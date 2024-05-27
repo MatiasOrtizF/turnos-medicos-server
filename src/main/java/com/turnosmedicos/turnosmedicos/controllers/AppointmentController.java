@@ -31,6 +31,15 @@ public class AppointmentController {
         }
     }
 
+    /*@GetMapping("{id}")
+    public ResponseEntity<?> getAllAppointmentAvailable(@RequestHeader(value = "Authorization") String token, @PathVariable Long id) {
+        try {
+            return ResponseEntity.status(appointmentService.getAllAppointmentAvailable(token, id));
+        } catch (UnauthorizedException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: invalid token");
+        }
+    }*/
+
     @PostMapping
     public ResponseEntity<?> addAppointment(@RequestHeader(value = "Authorization")String token, @RequestBody Appointment appointment) {
         try {

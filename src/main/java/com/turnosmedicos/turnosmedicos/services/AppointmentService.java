@@ -38,6 +38,16 @@ public class AppointmentService {
         } throw new UnauthorizedException("Unauthorized: Invalid token");
     }
 
+    public List<Date> getAllAppointmentAvailable(String token, Long id) {
+        if(authService.validationToken(token)) {
+            Long userId = authService.getUserId(token);
+            User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("The user is not found"));
+            Doctor doctor = doctorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("The doctor is not found"));
+
+
+        } throw new UnauthorizedException("Unauthorized: invalid token");
+    }
+
     public Appointment addAppointment(String token, Appointment appointment) {
         if(authService.validationToken(token)) {
             Long userId = authService.getUserId(token);

@@ -6,6 +6,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.time.LocalTime;
+import java.util.List;
+
 @Data
 @Entity
 @Table(name = "doctor")
@@ -40,4 +43,7 @@ public class Doctor {
     @NotBlank(message = "speciality is mandatory")
     @Column(name = "speciality", nullable = false)
     private String speciality;
+
+    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DayOfService> daysOfService;
 }
