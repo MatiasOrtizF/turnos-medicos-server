@@ -31,4 +31,13 @@ public class DayOfServiceController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: invalid token");
         }
     }
+
+    @GetMapping("{id}")
+    public ResponseEntity<?> getDoctorHour (@PathVariable Long id, @RequestHeader(value = "Authorization")String token) {
+        try {
+            return ResponseEntity.ok(dayOfServiceService.getDoctorHour(token, id));
+        } catch (UnauthorizedException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: invalid token");
+        }
+    }
 }

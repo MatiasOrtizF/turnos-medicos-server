@@ -10,6 +10,10 @@ import com.turnosmedicos.turnosmedicos.utils.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.format.TextStyle;
+import java.util.Locale;
+
 
 @Service
 public class DayOfServiceService {
@@ -32,6 +36,21 @@ public class DayOfServiceService {
             dayOfService.setDoctor(doctor);
 
             return dayOfServiceRepository.save(dayOfService);
+        } throw new UnauthorizedException("Unauthorized: invalid token");
+    }
+
+    public DayOfService getDoctorHour(String token, Long id) {
+        if(authService.validationToken(token)) {
+
+            for(Integer i=0; i<7 ; i++) {
+                LocalDate dateNow = LocalDate.now().plusDays(i);
+                String day = dateNow.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH).toLowerCase();
+                DayOfService dayOfService = dayOfServiceRepository.findByDoctorIdAndDay(id, day);
+                if(dayOfService != null) {
+                    return dayOfService;
+                }
+            }
+
         } throw new UnauthorizedException("Unauthorized: invalid token");
     }
 

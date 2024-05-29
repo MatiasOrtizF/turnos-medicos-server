@@ -1,6 +1,7 @@
 package com.turnosmedicos.turnosmedicos.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -23,10 +24,12 @@ public class DayOfService {
     private String day;
 
     @NotNull(message = "start time is mandatory")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
     @Column(name = "start_time", nullable = false)
     private LocalTime startTime;
 
     @NotNull(message = "end time is mandatory")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
     @Column(name = "end_time", nullable = false)
     private LocalTime endTime;
 
