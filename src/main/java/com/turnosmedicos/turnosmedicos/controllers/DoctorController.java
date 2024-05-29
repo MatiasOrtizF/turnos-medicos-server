@@ -36,10 +36,19 @@ public class DoctorController {
         }
     }
 
-    @GetMapping("{speciality}")
+    @GetMapping("bySpeciality/{speciality}")
     public ResponseEntity<?> getDoctorBySpeciality(@RequestHeader(value = "Authorization")String token, @PathVariable String speciality) {
         try {
             return ResponseEntity.ok(doctorService.getDoctorBySpeciality(token, speciality));
+        } catch (UnauthorizedException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("invalid token");
+        }
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<?> getDoctor(@RequestHeader(value = "Authorization")String token, @PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(doctorService.getDoctor(token, id));
         } catch (UnauthorizedException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("invalid token");
         }

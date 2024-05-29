@@ -10,7 +10,6 @@ import com.turnosmedicos.turnosmedicos.utils.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.swing.plaf.PanelUI;
 
 @Service
 public class DayOfServiceService {
