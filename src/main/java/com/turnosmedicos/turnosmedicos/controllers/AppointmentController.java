@@ -34,7 +34,7 @@ public class AppointmentController {
     @GetMapping("byDoctor/{id}")
     public ResponseEntity<?> getDayAppointmentAvailable(@PathVariable Long id, @RequestHeader(value = "Authorization")String token) {
         try {
-            return ResponseEntity.ok(appointmentService.getDayAppointmentAvailable(token, id));
+            return ResponseEntity.ok(appointmentService.getAllAppointmentAvailable(token, id));
         } catch (UnauthorizedException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: invalid token");
         }

@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface DayOfServiceRepository extends JpaRepository<DayOfService, Long> {
-    //List<DayOfService> findByDoctorId(Long userId);
+    List<DayOfService> findByDoctorId(Long doctorId);
     DayOfService findByDoctorIdAndDay(Long doctorId, String day);
 }

@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Date;
 
 @Data
@@ -18,10 +20,15 @@ public class Appointment {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @NotNull(message = "date is mandatory")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
-    @Column(name = "date", nullable = false)
-    private Date date;
+    @NotNull(message = "day is mandatory")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @Column(name = "day", nullable = false)
+    private LocalDate day;
+
+    @NotNull(message = "hour is mandatory")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
+    @Column(name = "hour", nullable = false)
+    private LocalTime hour;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "id_user")
