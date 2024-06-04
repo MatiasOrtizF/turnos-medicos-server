@@ -107,20 +107,23 @@ public class AppointmentService {
             newAppointment.setDoctor(doctor);
             newAppointment.setDay(appointment.getDay());
             newAppointment.setHour(appointment.getHour());
-            newAppointment.setSpeciality(appointment.getSpeciality());
 
             return appointmentRepository.save(newAppointment);
         } throw new UnauthorizedException("Unauthorized: invalid token");
     }
 
-    public Boolean cancelAppointment(Long id, String token) {
+    public Map<String, Boolean> cancelAppointment(Long id, String token) {
         if(authService.validationToken(token)) {
             Long userId = authService.getUserId(token);
             User user = userRepository.findById(userId).orElseThrow(()-> new ResourceNotFoundException("The user with this id:" + id + "is not found"));
-            Appointment appointment = appointmentRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("The shift with this id: " + id + "is not found"));;
+            Appointment appointment = appointmentRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("The appointment with this id: " + id + "is not found"));;
+
             if(Objects.equals(user.getId(), appointment.getUser().getId())) {
                 appointmentRepository.delete(appointment);
-                return true;
+                Map<String, Boolean> response = new HashMap<>();
+                response.put("deleted", Boolean.TRUE);
+                return response;
+
             } throw new UserMismatchException("User mismatch");
         } throw new UnauthorizedException("Unauthorized: invalid token");
     }

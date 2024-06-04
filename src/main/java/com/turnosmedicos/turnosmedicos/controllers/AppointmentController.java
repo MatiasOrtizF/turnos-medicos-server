@@ -1,6 +1,8 @@
 package com.turnosmedicos.turnosmedicos.controllers;
 
+import com.turnosmedicos.turnosmedicos.exceptions.ResourceNotFoundException;
 import com.turnosmedicos.turnosmedicos.exceptions.UnauthorizedException;
+import com.turnosmedicos.turnosmedicos.exceptions.UserMismatchException;
 import com.turnosmedicos.turnosmedicos.models.Appointment;
 import com.turnosmedicos.turnosmedicos.services.AppointmentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +57,10 @@ public class AppointmentController {
             return ResponseEntity.ok(appointmentService.cancelAppointment(id, token));
         } catch (UnauthorizedException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: invalid token");
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Appointment or user does not exist");
+        } catch (UserMismatchException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("User Mismatch");
         }
     }
 }

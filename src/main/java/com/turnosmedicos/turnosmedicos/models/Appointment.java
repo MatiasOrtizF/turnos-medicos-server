@@ -34,10 +34,6 @@ public class Appointment {
     @JoinColumn(name = "id_user")
     private User user;
 
-    @NotBlank(message = "speciality is mandatory")
-    @Column(name = "speciality", nullable = false)
-    private String speciality;
-
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "id_doctor")
     private Doctor doctor;
