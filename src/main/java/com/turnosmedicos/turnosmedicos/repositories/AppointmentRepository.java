@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
 
@@ -14,5 +15,5 @@ import java.util.List;
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
     List<Appointment> findByUserId(Long userId);
     List<Appointment> findByDay(LocalDate day);
-
+    Appointment findByDoctorIdAndHourAndDay(Long doctorId, LocalTime hour, LocalDate day);
 }

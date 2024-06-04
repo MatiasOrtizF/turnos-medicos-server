@@ -1,5 +1,6 @@
 package com.turnosmedicos.turnosmedicos.controllers;
 
+import com.turnosmedicos.turnosmedicos.exceptions.AppointmentAlreadyExistingException;
 import com.turnosmedicos.turnosmedicos.exceptions.ResourceNotFoundException;
 import com.turnosmedicos.turnosmedicos.exceptions.UnauthorizedException;
 import com.turnosmedicos.turnosmedicos.exceptions.UserMismatchException;
@@ -48,6 +49,8 @@ public class AppointmentController {
             return ResponseEntity.ok(appointmentService.addAppointment(token, appointment));
         } catch (UnauthorizedException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: invalid token");
+        } catch (AppointmentAlreadyExistingException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("The appointment already existing");
         }
     }
 

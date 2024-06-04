@@ -1,6 +1,7 @@
 package com.turnosmedicos.turnosmedicos.services;
 
 import ch.qos.logback.core.net.SyslogOutputStream;
+import com.turnosmedicos.turnosmedicos.exceptions.AppointmentAlreadyExistingException;
 import com.turnosmedicos.turnosmedicos.exceptions.ResourceNotFoundException;
 import com.turnosmedicos.turnosmedicos.exceptions.UnauthorizedException;
 import com.turnosmedicos.turnosmedicos.exceptions.UserMismatchException;
@@ -102,13 +103,17 @@ public class AppointmentService {
             User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("The user is not found"));
             Doctor doctor = doctorRepository.findById(appointment.getDoctor().getId()).orElseThrow(() -> new ResourceNotFoundException("The doctor is not found"));
 
-            Appointment newAppointment = new Appointment();
-            newAppointment.setUser(user);
-            newAppointment.setDoctor(doctor);
-            newAppointment.setDay(appointment.getDay());
-            newAppointment.setHour(appointment.getHour());
+            Appointment appointmentExisting = appointmentRepository.findByDoctorIdAndHourAndDay(appointment.getDoctor().getId(), appointment.getHour(), appointment.getDay());
+            if(appointmentExisting == null) {
+                Appointment newAppointment = new Appointment();
 
-            return appointmentRepository.save(newAppointment);
+                newAppointment.setUser(user);
+                newAppointment.setDoctor(doctor);
+                newAppointment.setDay(appointment.getDay());
+                newAppointment.setHour(appointment.getHour());
+
+                return appointmentRepository.save(newAppointment);
+            } throw new AppointmentAlreadyExistingException("The appointment already existing");
         } throw new UnauthorizedException("Unauthorized: invalid token");
     }
 
