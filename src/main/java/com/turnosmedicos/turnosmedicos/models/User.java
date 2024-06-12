@@ -28,6 +28,14 @@ public class User {
     @Column(name = "dni", nullable = false)
     private Integer dni;
 
+    @NotBlank(message = "cellphone is mandatory")
+    @Column(name = "cellphone", nullable = false)
+    private Integer cellphone;
+
+    @NotBlank(message = "phone is mandatory")
+    @Column(name = "phone", nullable = false)
+    private Integer phone;
+
     @NotBlank(message = "email is mandatory")
     @Column(name = "email", nullable = false)
     private String email;

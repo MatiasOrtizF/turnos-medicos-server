@@ -35,9 +35,27 @@ public class AppointmentController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<?> getDayAppointmentAvailable(@PathVariable Long id, @RequestHeader(value = "Authorization")String token) {
+    public ResponseEntity<?> getDayAppointmentAvailable(@PathVariable Long id, @RequestHeader(value = "Authorization")String token, @RequestParam Integer dayNumber) {
         try {
-            return ResponseEntity.ok(appointmentService.getAllAppointmentAvailable(token, id));
+            return ResponseEntity.ok(appointmentService.getAllAppointmentAvailable(token, id, dayNumber));
+        } catch (UnauthorizedException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: invalid token");
+        }
+    }
+
+    @GetMapping("next-day/{id}")
+    public ResponseEntity<?> getNextDayAvailable(@PathVariable Long id, @RequestHeader(value = "Authorization")String token, @RequestParam Integer dayNumber) {
+        try {
+            return ResponseEntity.ok(appointmentService.getNextDayAvailable(token, id, dayNumber));
+        } catch (UnauthorizedException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: invalid token");
+        }
+    }
+
+    @GetMapping("previous-day/{id}")
+    public ResponseEntity<?> getPreviousDayAvailable(@PathVariable Long id, @RequestHeader(value = "Authorization")String token) {
+        try {
+            return ResponseEntity.ok(appointmentService.getPreviousDayAvailable(token, id));
         } catch (UnauthorizedException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: invalid token");
         }

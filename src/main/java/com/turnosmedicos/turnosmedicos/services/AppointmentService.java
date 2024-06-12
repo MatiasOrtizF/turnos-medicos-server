@@ -44,8 +44,85 @@ public class AppointmentService {
     }
 
 
-    public AppointmentResponse getAllAppointmentAvailable(String token, Long id) {
+    public AppointmentResponse getAllAppointmentAvailable(String token, Long id, Integer dayNumber) {
         if(authService.validationToken(token)) {
+            List<LocalTime> listHour = new ArrayList<>(); // inicializamos la lista de horas disponibles
+            AppointmentResponse response = getNextDayAvailable(token, id, dayNumber);
+            String dayAvailable = response.getDay();
+            LocalDate dateNow = LocalDate.parse(dayAvailable);
+
+            while(listHour.isEmpty()){ // mientras la lista sea vacia
+
+                List<Appointment> appointments = appointmentRepository.findByDay(dateNow); // lista de turnos no disponibles del dia recorrido
+
+                listHour = getNextDayAvailable(token, id, dayNumber).getHour();
+
+                if (appointments != null) { // si la lista es nula significa que estan todos los turnos libres.
+                    for (Appointment appointment : appointments) { // recorremos la lista de turnos
+                        for(int k = 0; k<listHour.size(); k++) { // recorremos la lista de horas (cada 15 minutos, es lo que dura cada consulta)
+                            if(appointment.getHour().toString().equals(listHour.get(k).toString())) { // si el turno ya ocupa es igual a una hora recorrida esa hora se quita de la lista.
+                                listHour.remove(k); // removemos la hora de la lista.
+                            }
+                        }
+                    }
+                }
+            }
+
+            response.setHour(listHour);
+
+            return response; // return appointment available
+        } throw new UnauthorizedException("Unauthorized: invalid token");
+    }
+
+    public AppointmentResponse getNextDayAvailable(String token, Long id, Integer dayNumber) {
+        if (authService.validationToken(token)) {
+            List<LocalTime> listHour = new ArrayList<>(); // inicializamos la lista de horas disponibles
+            dayNumber++;
+            int i = dayNumber; // la i representa el dia.
+            int cantAppointmentPerDay = 0;
+
+            while(i>=0){ // mientras la lista sea vacia
+                LocalDate dateNow = LocalDate.now().plusDays(i); //el dia recorrido
+                String day = dateNow.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH).toLowerCase(); //dia recorrido formateado
+
+                List<DayOfService> dayOfServices = dayOfServiceRepository.findByDoctorId(id); // lista de dias que atiende el doctor
+
+                if(dayOfServices != null) { // la lista de dias no es nulo
+                    for(DayOfService dayOfService : dayOfServices) {  // recorremos los dias que atiende el doctor
+                        if(day.equals(dayOfService.getDay().toLowerCase())) { // si el dia recorrido coincide al dia que atiende el doctor
+                            String dayAvailable = dateNow.toString(); //dayAvailable va a ser igual a dia recorrido
+                            List<Appointment> appointments = appointmentRepository.findByDay(dateNow); // lista de turnos no disponibles del dia recorrido
+                            LocalTime startTime = dayOfService.getStartTime(); // hora de entrada del doctor
+                            LocalTime endTime = dayOfService.getEndTime(); // hora de salida del doctor
+
+                            long minDif = ChronoUnit.MINUTES.between(startTime, endTime); // minutos total que trabaja el doctor (para poder saber hasta que punto recorrer)
+
+
+                            for(int j = 0; j<=minDif; j+=15) { // recorremos las horas que el doctor atiende (cada 15 minutos, es lo que dura cada consulta)
+                                cantAppointmentPerDay++;
+                                listHour.add(startTime); // agregamos la hora al al array
+                                startTime = startTime.plusMinutes(15); // aumenta la hora para recorrer el ciclo for
+                            }
+
+                            if(appointments.isEmpty() || appointments.size() < cantAppointmentPerDay) { // si esto es true significa que estan todos los turnos libres.
+                                AppointmentResponse response = new AppointmentResponse();
+                                response.setDayNumber(i);
+                                response.setDay(dayAvailable);
+                                response.setHour(listHour);
+
+                                return response;
+                            }
+                        }
+                    }
+                }
+
+                i++; // aumentamos i para que ir al dia siguiente.
+            }
+        } throw new UnauthorizedException("Unauthorized: invalid token");
+    }
+
+    public String getPreviousDayAvailable(String token, Long id) {
+        if (authService.validationToken(token)) {
             List<LocalTime> listHour = new ArrayList<>();
             String dayAvailable = "";
 
@@ -88,11 +165,7 @@ public class AppointmentService {
                 i++;
             }
 
-            AppointmentResponse response = new AppointmentResponse();
-            response.setDay(dayAvailable);
-            response.setHour(listHour);
-
-            return response; // return appointment available
+            return dayAvailable; // return day available
         } throw new UnauthorizedException("Unauthorized: invalid token");
     }
 
@@ -125,10 +198,10 @@ public class AppointmentService {
 
             if(Objects.equals(user.getId(), appointment.getUser().getId())) {
                 appointmentRepository.delete(appointment);
+
                 Map<String, Boolean> response = new HashMap<>();
                 response.put("deleted", Boolean.TRUE);
                 return response;
-
             } throw new UserMismatchException("User mismatch");
         } throw new UnauthorizedException("Unauthorized: invalid token");
     }

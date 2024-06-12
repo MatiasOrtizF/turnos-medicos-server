@@ -9,4 +9,5 @@ import java.util.List;
 public class AppointmentResponse {
     private List<LocalTime> hour;
     private String day;
+    private Integer dayNumber;
 }
